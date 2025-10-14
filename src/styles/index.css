@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* react-grid-layout defaults */
+.react-grid-layout {
+  min-height: 400px;
+}
