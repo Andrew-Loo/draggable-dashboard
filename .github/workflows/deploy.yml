@@ -2,10 +2,9 @@
 name: Deploy to GitHub Pages
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
-    branches: [ "main" ]   # only when CI ran for main
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,14 +16,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          name: dist
-          path: dist
+          node-version: "20"
+      - name: Install deps (ci if lockfile, else install)
+        run: |
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+      - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
