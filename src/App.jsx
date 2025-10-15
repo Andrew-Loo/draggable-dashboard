@@ -10,7 +10,7 @@ import KPIWidget from "./components/KPIWidget";
 
 // ---------- Config ----------
 const STORAGE_KEY = "demo_dashboard_layout_v1";
-
+const DROPPING_ID = "__dropping__";
 const DEFAULT_STATE = {
   layout: [
     { i: "kpi-1", x: 0, y: 0, w: 3, h: 4 },
@@ -199,13 +199,23 @@ export default function App() {
                 droppingItem={{ i: "__dropping__", w: 3, h: 4 }}
                 onLayoutChange={(nextLayout) => onLayoutCommit(nextLayout)}
               >
-                {draft.layout.map((g) => (
-                  <div key={g.i} data-grid={g} className="group">
-                    <Card title={itemMap[g.i]?.title || g.i} editing={editing} onRemove={() => removeItem(g.i)}>
-                      {renderWidget(itemMap[g.i]?.type)}
-                    </Card>
-                  </div>
-                ))}
+                {draft.layout.map((g) => {
+                  const isGhost = g.i === DROPPING_ID;
+                  return (
+                    <div key={g.i} data-grid={g} className="group">
+                      {isGhost ? (
+                        <div className="h-full w-full rounded-2xl border border-dashed border-slate-300
+                                        flex items-center justify-center text-xs text-slate-400">
+                          Dropping…
+                        </div>
+                      ) : (
+                        <Card title={itemMap[g.i]?.title || g.i} editing={editing} onRemove={() => removeItem(g.i)}>
+                          {renderWidget(itemMap[g.i]?.type)}
+                        </Card>
+                      )}
+                    </div>
+                  );
+                })}
               </AutoWidthGrid>
             </div>
           </main>
