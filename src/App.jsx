@@ -11,6 +11,8 @@ import KPIWidget from "./components/KPIWidget";
 // ---------- Config ----------
 const STORAGE_KEY = "demo_dashboard_layout_v1";
 const DROPPING_ID = "__dropping__";
+const stripGhost = (layout) => layout.filter((it) => it.i !== DROPPING_ID);
+
 const DEFAULT_STATE = {
   layout: [
     { i: "kpi-1", x: 0, y: 0, w: 3, h: 4 },
@@ -95,7 +97,7 @@ export default function App() {
     if (editing) setDraft(JSON.parse(JSON.stringify(saved)));
   }, [editing]);
 
-  const onLayoutCommit = (nextLayout) => setDraft((d) => ({ ...d, layout: nextLayout }));
+  const onLayoutCommit = (nextLayout) => setDraft((d) => ({ ...d, layout: stripGhost(nextLayout) }));
 
   const removeItem = (id) => {
     setDraft((d) => ({
@@ -105,12 +107,14 @@ export default function App() {
   };
 
   const handleSave = () => {
-    setSaved(draft);
-    saveState(draft);
+    const cleaned = { ...draft, layout: stripGhost(draft.layout) };
+    setSaved(cleaned);
+    saveState(cleaned);
     setEditing(false);
   };
+
   const handleCancel = () => {
-    setDraft(saved);
+    setDraft({ ...saved, layout: stripGhost(saved.layout) });
     setEditing(false);
   };
 
@@ -125,11 +129,11 @@ export default function App() {
 
   const onDrop = (_layout, layoutItem, ev) => {
     let type = dragTypeRef.current;
-    try {
-      const dt = ev?.dataTransfer?.getData("text/plain");
-      if (dt) type = dt;
-    } catch {}
+    try { const dt = ev?.dataTransfer?.getData("text/plain"); if (dt) type = dt; } catch {}
     if (!type) return;
+
+    // ensure ghost never sticks around
+    setDraft((d) => ({ ...d, layout: stripGhost(d.layout) }));
     addItemAt(type, layoutItem.x, layoutItem.y, layoutItem.w, layoutItem.h);
   };
 
