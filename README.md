@@ -7,7 +7,7 @@ and persistence to `localStorage`.
 - Routing: HashRouter (works well on GitHub Pages)
 - Styling: Tailwind CSS
 - CI/CD: GitHub Actions deploy to GitHub Pages
-- 
+
 ## Demo Link
 
 Demmo domain: https://dd.fmit.sg
