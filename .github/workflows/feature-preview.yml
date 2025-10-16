@@ -1,0 +1,52 @@
+name: Feature Preview (GitHub Pages)
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [ "feature/onemap-widget" ]
+    
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages-preview-${{ github.event.workflow_run.head_branch }}"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install deps (ci if lockfile, else install)
+        run: |
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+      - run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+          
+      - name: Deploy feature preview
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          preview: true
+
+      - name: Comment feature preview URL
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: preview
+          message: |
+            Preview is ready: ${{ needs.deploy.outputs.page_url }}
