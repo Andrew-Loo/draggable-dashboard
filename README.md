@@ -20,4 +20,4 @@ Demmo domain: https://dd.fmit.sg
 ## Deploy (GitHub Pages)
 1. Push to `main`.
 2. In GitHub → **Settings → Pages** → **Source: GitHub Actions**.
-3. The workflow publishes to: `https://<username>.github.io/draggable-dashboard/`.
+3. The workflow publishes to: `https://dd.fmit.sg`.
