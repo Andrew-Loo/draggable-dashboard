@@ -4,7 +4,8 @@ name: PR Preview (GitHub Pages)
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-
+  workflow_dispatch:
+  
 permissions:
   contents: read
   pages: write
