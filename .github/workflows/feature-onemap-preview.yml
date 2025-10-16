@@ -1,4 +1,4 @@
-name: Feature Preview (GitHub Pages)
+name: Feature OneMap Preview (GitHub Pages)
 
 on:
   workflow_dispatch:
