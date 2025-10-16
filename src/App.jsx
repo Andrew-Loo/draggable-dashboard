@@ -7,6 +7,7 @@ import Card from "./components/Card";
 import ChartWidget from "./components/ChartWidget";
 import TableWidget from "./components/TableWidget";
 import KPIWidget from "./components/KPIWidget";
+import OneMapWidget from "./components/OneMapWidget";
 
 // ---------- Config ----------
 const STORAGE_KEY = "demo_dashboard_layout_v1";
@@ -18,12 +19,14 @@ const DEFAULT_STATE = {
     { i: "kpi-1", x: 0, y: 0, w: 3, h: 4 },
     { i: "chart-1", x: 3, y: 0, w: 6, h: 8 },
     { i: "table-1", x: 9, y: 0, w: 3, h: 8 },
+    { i: "map-1", x: 0, y: 8, w: 12, h: 12 }
   ],
   items: {
     "kpi-1": { type: "KPI", title: "Open Tickets" },
     "chart-1": { type: "Chart", title: "Monthly Revenue" },
     "table-1": { type: "Table", title: "Recent Jobs" },
-  },
+    "map-1": { type: "Map", title: "Singapore OneMap" }
+  }
 };
 
 // ---------- Storage helpers ----------
@@ -81,6 +84,8 @@ function renderWidget(type) {
       return <TableWidget />;
     case "KPI":
       return <KPIWidget />;
+    case "Map":
+      return <OneMapWidget />;
     default:
       return <div>Unknown widget type: {type}</div>;
   }
@@ -171,7 +176,7 @@ export default function App() {
               <div className="text-sm font-semibold mb-2">Widget Palette</div>
               <div className="text-xs text-slate-500 mb-3">Drag a widget into the grid on the right.</div>
               <div className="flex flex-wrap gap-2">
-                {["KPI", "Chart", "Table"].map((type) => (
+                {["KPI", "Chart", "Table", "Map"].map((type) => (
                   <button
                     key={type}
                     draggable={editing}
