@@ -1,5 +1,4 @@
-# .github/workflows/deploy.yml
-name: PR Preview (GitHub Pages)
+name: Preview (GitHub Pages)
 
 on:
   pull_request:
@@ -37,15 +36,15 @@ jobs:
         with:
           path: ./dist
           
-      - name: Deploy PR preview
+      - name: Deploy preview
         id: deployment
         uses: actions/deploy-pages@v4
         with:
           preview: true
 
-      - name: Comment preview URL on PR
+      - name: Comment preview URL
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          header: pr-preview
+          header: preview
           message: |
             Preview is ready: ${{ needs.deploy.outputs.page_url }}
