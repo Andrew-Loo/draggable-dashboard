@@ -30,22 +30,21 @@ jobs:
             npm install
           fi
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
-      - id: deployment
+          
+      - name: Deploy PR preview
+        id: deployment
         uses: actions/deploy-pages@v4
         with:
           preview: true
-          
-comment-url:
-  needs: jobs
-  runs-on: ubuntu-latest
-  if: ${{ needs.deploy.outputs.page_url != '' }}
-  steps:
-    - name: Comment preview URL on PR
-      uses: marocchino/sticky-pull-request-comment@v2
-      with:
-        header: pr-preview
-        message: |
-          Preview is ready: ${{ needs.deploy.outputs.page_url }}
+
+      - name: Comment preview URL on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-preview
+          message: |
+            Preview is ready: ${{ needs.deploy.outputs.page_url }}
