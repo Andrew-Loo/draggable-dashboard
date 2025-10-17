@@ -5,12 +5,14 @@ export default function Card({ title, children, onRemove, editing }) {
         <div className="text-sm font-semibold text-slate-700 truncate">{title}</div>
         {editing && (
           <button
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
               onRemove();
             }}
-            className="rounded-lg px-2 py-1 text-xs border border-slate-300 hover:bg-slate-50"
+            className="rounded-lg px-2 py-1 text-xs border border-slate-300 hover:bg-slate-50 no-drag"
             aria-label="Remove widget"
             title="Remove widget"
           >
