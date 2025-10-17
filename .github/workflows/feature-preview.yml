@@ -60,4 +60,4 @@ jobs:
           preview: true
 
       - name: Add preview link to job summary
-        run: echo "**Preview URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+        run: echo "**Preview URL:** ${{ steps.deployment.outputs.preview_url }}" >> $GITHUB_STEP_SUMMARY
