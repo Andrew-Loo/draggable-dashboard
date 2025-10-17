@@ -166,28 +166,32 @@ export default function App() {
         </div>
 
         <div className="grid grid-cols-12 gap-4">
-          <aside className={`col-span-12 lg:col-span-3 ${editing ? "" : "opacity-60 pointer-events-none"}`}>
-            <div className="bg-white rounded-2xl shadow border border-slate-200 p-3">
-              <div className="text-sm font-semibold mb-2">Widget Palette</div>
-              <div className="text-xs text-slate-500 mb-3">Drag a widget into the grid on the right.</div>
-              <div className="flex flex-wrap gap-2">
-                {["KPI", "Chart", "Table"].map((type) => (
-                  <button
-                    key={type}
-                    draggable={editing}
-                    onDragStart={(e) => { dragTypeRef.current = type; try { e.dataTransfer.setData("text/plain", type); } catch {} }}
-                    onDragEnd={() => (dragTypeRef.current = null)}
-                    className="px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-sm"
-                    title={editing ? `Drag ${type}` : "Click Edit to enable dragging"}
-                  >
-                    ➕ {type}
-                  </button>
-                ))}
+          {editing && (
+            <aside className="col-span-12 lg:col-span-3">
+              <div className="bg-white rounded-2xl shadow border border-slate-200 p-3">
+                <div className="text-sm font-semibold mb-2">Widget Palette</div>
+                <div className="text-xs text-slate-500 mb-3">Drag a widget into the grid on the right.</div>
+                <div className="flex flex-wrap gap-2">
+                  {["KPI", "Chart", "Table"].map((type) => (
+                    <button
+                      key={type}
+                      draggable
+                      onDragStart={(e) => {
+                        dragTypeRef.current = type;
+                        try { e.dataTransfer.setData("text/plain", type); } catch {}
+                      }}
+                      onDragEnd={() => (dragTypeRef.current = null)}
+                      className="px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-sm"
+                    >
+                      ➕ {type}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </aside>
+            </aside>
+          )}
 
-          <main className="col-span-12 lg:col-span-9">
+          <main className={`col-span-12 ${editing ? "lg:col-span-9" : "lg:col-span-12"}`}>
             <div className="bg-white rounded-2xl shadow border border-slate-200 p-2">
               <AutoWidthGrid
                 className="layout"
