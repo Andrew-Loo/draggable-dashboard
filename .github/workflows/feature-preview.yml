@@ -1,7 +1,15 @@
-name: Feature OneMap Preview (GitHub Pages)
+name: Feature Preview (GitHub Pages)
 
 on:
   workflow_dispatch:
+    inputs:
+      ref:
+        type: choice
+        description: 'Select branch to preview'
+        options:
+          - main
+          - feature/onemap-widget
+        default: feature/onemap-widget
   workflow_run:
     workflows: ["CI"]
     types: [completed]
@@ -13,17 +21,24 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages-preview-${{ github.event.workflow_run.head_branch }}"
+  group: pages-preview-${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 jobs:
   build-and-deploy:
+    name: Build and Deploy Feature Preview
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout target ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.event.workflow_run.head_sha }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          
       - name: Install deps (ci if lockfile, else install)
         run: |
           if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
@@ -44,9 +59,5 @@ jobs:
         with:
           preview: true
 
-      - name: Comment feature preview URL
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: preview
-          message: |
-            Preview is ready: ${{ needs.deploy.outputs.page_url }}
+      - name: Add preview link to job summary
+        run: echo "**Preview URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
