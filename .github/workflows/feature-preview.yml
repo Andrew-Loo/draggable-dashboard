@@ -28,6 +28,8 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Feature Preview
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages-preview
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout target ref
@@ -60,4 +62,6 @@ jobs:
           preview: true
 
       - name: Add preview link to job summary
-        run: echo "**Preview URL:** ${{ steps.deployment.outputs.preview_url }}" >> $GITHUB_STEP_SUMMARY
+        env:
+          URL: ${{ steps.deployment.outputs.preview_url != '' && steps.deployment.outputs.preview_url || steps.deployment.outputs.page_url }}
+        run: echo "**Preview URL:** ${URL}" >> $GITHUB_STEP_SUMMARY
