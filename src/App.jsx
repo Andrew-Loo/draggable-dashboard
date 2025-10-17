@@ -140,8 +140,8 @@ export default function App() {
   const itemMap = draft.items;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4">
-      <div className="max-w-7xl mx-auto">
+    <div className={`min-h-screen ${editing ? "bg-slate-50 p-4" : "bg-slate-900 p-0"} overflow-hidden`}>
+      <div className={editing ? "max-w-7xl mx-auto" : "w-screen"}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="text-xl font-semibold">Draggable Dashboard</div>
@@ -191,8 +191,8 @@ export default function App() {
             </aside>
           )}
 
-          <main className={`col-span-12 ${editing ? "lg:col-span-9" : "lg:col-span-12"}`}>
-            <div className="bg-white rounded-2xl shadow border border-slate-200 p-2">
+          <main className={`col-span-12 ${editing ? "lg:col-span-9" : "lg:col-span-12"} ${editing ? "" : "h-[calc(100vh-64px)]"}`}>
+            <div className={`rounded-2xl border border-slate-200 p-2 shadow ${editing ? "bg-white" : "bg-white/95 h-full overflow-auto"}`}>
               <AutoWidthGrid
                 className="layout"
                 rowHeight={28}
@@ -228,10 +228,11 @@ export default function App() {
             </div>
           </main>
         </div>
-
-        <div className="mt-4 text-[11px] text-slate-500">
-          Stored in <code>localStorage["demo_dashboard_layout_v1"]</code>. Resize/drag only in edit mode.
-        </div>
+        {editing && (
+          <div className="mt-4 text-[11px] text-slate-500">
+            Stored in <code>localStorage["demo_dashboard_layout_v1"]</code>. Resize/drag only in edit mode.
+          </div>
+        )}
       </div>
     </div>
   );
