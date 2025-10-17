@@ -12,7 +12,7 @@ export default function Card({ title, children, onRemove, editing }) {
               e.preventDefault();
               onRemove();
             }}
-            className="rounded-lg px-2 py-1 text-xs border border-slate-300 hover:bg-slate-50 no-drag"
+            className="rounded-lg px-2 py-1 text-xs border border-slate-300 hover:bg-slate-50"
             aria-label="Remove widget"
             title="Remove widget"
           >
