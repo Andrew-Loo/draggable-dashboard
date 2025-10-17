@@ -61,7 +61,31 @@ jobs:
         with:
           preview: true
 
-      - name: Add preview link to job summary
+      - name: Get preview URL via GitHub API
+        id: get_preview
         env:
-          URL: ${{ steps.deployment.outputs.preview_url != '' && steps.deployment.outputs.preview_url || steps.deployment.outputs.page_url }}
-        run: echo "**Preview URL:** ${URL}" >> $GITHUB_STEP_SUMMARY
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
+        run: |
+          # Get the latest deployment in github-pages env for this commit that is a preview
+          DEPLOYMENTS_JSON=$(gh api repos/$REPO/deployments --jq \
+            '[.[] | select(.environment=="github-pages")]')
+          # Find the first deployment whose payload indicates preview AND whose sha matches
+          DEPLOY_ID=$(echo "$DEPLOYMENTS_JSON" | jq -r \
+            '.[] | select((.payload.preview==true) and (.sha=="'"$SHA"'")) | .id' | head -n1)
+
+          if [ -z "$DEPLOY_ID" ]; then
+            echo "url=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Read the latest status for that deployment and grab environment_url (the preview link)
+          STATUS_URL=$(echo "$DEPLOYMENTS_JSON" | jq -r \
+            '.[] | select(.id=='"$DEPLOY_ID"') | .statuses_url')
+          PREVIEW_URL=$(gh api "$STATUS_URL" --jq '.[0].environment_url')
+
+          echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+
+      - name: Add preview link to job summary
+        run: echo "**Preview URL:** ${{ steps.get_preview.outputs.url }}" >> $GITHUB_STEP_SUMMARY
